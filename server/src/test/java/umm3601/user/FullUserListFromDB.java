@@ -34,7 +34,7 @@ public class FullUserListFromDB {
   }
 
     @Test
-    public void totalTodoCount() throws IOException {
+    public void firstTodoInFullList() throws IOException {
       TodoDatabase db = new TodoDatabase("/todos.json");
       Todo[] allTodos = db.listTodos(new HashMap<>());
       Todo firstTodo = allTodos[0];
