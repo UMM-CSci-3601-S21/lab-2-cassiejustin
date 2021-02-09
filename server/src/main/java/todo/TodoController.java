@@ -20,8 +20,8 @@ public class TodoController {
    * @param ctx a Javalin HTTP context
    */
   public void getTodos(Context ctx) {
-    Todo[] users = database.listTodos(ctx.queryParamMap());
-    ctx.json(users);
+    Todo[] todos = database.listTodos(ctx.queryParamMap());
+    ctx.json(todos);
   }
 
 
