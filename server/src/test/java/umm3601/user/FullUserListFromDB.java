@@ -32,6 +32,12 @@ public class FullUserListFromDB {
     assertEquals("OHMNET", firstUser.company, "Incorrect company");
     assertEquals("conniestewart@ohmnet.com", firstUser.email, "Incorrect e-mail");
   }
+  @Test
+  public void totalTodoCount() throws IOException {
+    TodoDatabase db = new TodoDatabase("/todos.json");
+    Todo[] allTodos = db.listTodos(new HashMap<>());
+    assertEquals(300, allTodos.length, "incorrect Total Todo count");
+  }
 
     @Test
     public void firstTodoInFullList() throws IOException {
