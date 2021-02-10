@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
+import todo.TodoController;
+import todo.TodoDatabase;
 import umm3601.user.userDatabase;
 import umm3601.user.UserController;
 
@@ -11,12 +13,15 @@ public class Server {
 
   public static final String CLIENT_DIRECTORY = "../client";
   public static final String USER_DATA_FILE = "/users.json";
+  public static final String TODO_DATA_FILE = "/todos.json";
   private static userDatabase userDatabase;
+  private static TodoDatabase todoDatabase;
 
   public static void main(String[] args) {
 
     // Initialize dependencies
     UserController userController = buildUserController();
+    TodoController todoController = buildTodoController();
 
     Javalin server = Javalin.create(config -> {
       // This tells the server where to look for static files,
@@ -39,6 +44,9 @@ public class Server {
 
     // List users, filtered using query parameters
     server.get("/api/users", ctx -> userController.getUsers(ctx));
+    server.get("/api/todos", ctx -> todoController.getTodos(ctx));
+
+
   }
 
   /***
@@ -64,5 +72,21 @@ public class Server {
     }
 
     return userController;
+  }
+  private static TodoController buildTodoController() {
+    TodoController todoController = null;
+
+    try {
+      todoDatabase = new TodoDatabase(TODO_DATA_FILE);
+      todoController = new TodoController(todoDatabase);
+    } catch (IOException e) {
+      System.err.println("The server failed to load the user data; shutting down.");
+      e.printStackTrace(System.err);
+
+      // Exit from the Java program
+      System.exit(1);
+    }
+
+    return todoController;
   }
 }
