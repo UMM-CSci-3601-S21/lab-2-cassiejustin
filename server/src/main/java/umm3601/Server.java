@@ -42,6 +42,8 @@ public class Server {
     // Get specific user
     server.get("/api/users/:id", ctx -> userController.getUser(ctx));
 
+
+
     // List users, filtered using query parameters
     server.get("/api/users", ctx -> userController.getUsers(ctx));
     server.get("/api/todos", ctx -> todoController.getTodos(ctx));
