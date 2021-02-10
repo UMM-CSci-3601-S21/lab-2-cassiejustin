@@ -40,15 +40,15 @@ public class TodoDatabase {
       String statusParam = queryParams.get("status").get(0);
 
       try {
-        boolean targetStatus=true;
+
         if (statusParam == "complete"){
-            targetStatus = true;
+           boolean targetStatus = true;
+           filteredTodos = filterTodosByStatus(filteredTodos, targetStatus);
         }
         else{
-            targetStatus = false;
+           boolean targetStatus = false;
+           filteredTodos = filterTodosByStatus(filteredTodos, targetStatus);
         }
-
-        filteredTodos = filterTodosByStatus(filteredTodos, targetStatus);
       } catch (NumberFormatException e) {
         throw new BadRequestResponse("Specified status '" + statusParam + "' can't be parsed to an integer");
       }
