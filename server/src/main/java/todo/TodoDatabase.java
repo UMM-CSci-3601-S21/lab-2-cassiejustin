@@ -57,6 +57,11 @@ public class TodoDatabase {
         throw new BadRequestResponse("Specified status '" + limitParam + "' can't be parsed to an integer");
       }
     }
+    // filter by body if defined
+    if (queryParams.containsKey("contains")){
+      String bodyParam = queryParams.get("contains").get(0);
+      filteredTodos = filterTodosByContains(filteredTodos, bodyParam);
+    }
     return filteredTodos;
   }
 
@@ -79,6 +84,10 @@ public class TodoDatabase {
 
   public Todo[] filterTodosByLimit(Todo[] todos, int limit){
     return Arrays.copyOfRange(todos, 0, limit);
+  }
+
+  public Todo[] filterTodosByContains(Todo[] todos, String string){
+    return Arrays.stream(todos).filter(x-> x.body.contains(string)).toArray(Todo[]::new);
   }
 
 
