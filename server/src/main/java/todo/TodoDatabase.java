@@ -38,14 +38,14 @@ public class TodoDatabase {
     // Filter by status if defined
     if (queryParams.containsKey("status")) {
       String statusParam = queryParams.get("status").get(0);
-        if (statusParam == "complete"){
-           boolean targetStatus = true;
-           filteredTodos = filterTodosByStatus(filteredTodos, targetStatus);
+      boolean targetStatus;
+        if (statusParam == "incomplete"){
+          targetStatus = false;
         }
-        else{
-           boolean targetStatus = false;
-           filteredTodos = filterTodosByStatus(filteredTodos, targetStatus);
+        else {
+          targetStatus = true;
         }
+      filteredTodos = filterTodosByStatus(filteredTodos, targetStatus);
     }
     // filter by limit if defined
     if (queryParams.containsKey("limit")){
@@ -56,6 +56,11 @@ public class TodoDatabase {
       } catch (NumberFormatException e){
         throw new BadRequestResponse("Specified status '" + limitParam + "' can't be parsed to an integer");
       }
+    }
+    // filter by body if defined
+    if (queryParams.containsKey("contains")){
+      String bodyParam = queryParams.get("contains").get(0);
+      filteredTodos = filterTodosByContains(filteredTodos, bodyParam);
     }
     return filteredTodos;
   }
@@ -73,12 +78,16 @@ public class TodoDatabase {
   }
 
   public Todo[] filterTodosByStatus(Todo[] todos, boolean status){
-    return Arrays.stream(todos).filter(x -> x.status == status).toArray(Todo[]::new);
+    return Arrays.stream(todos).filter(x -> x.status == (status)).toArray(Todo[]::new);
 
   }
 
   public Todo[] filterTodosByLimit(Todo[] todos, int limit){
     return Arrays.copyOfRange(todos, 0, limit);
+  }
+
+  public Todo[] filterTodosByContains(Todo[] todos, String string){
+    return Arrays.stream(todos).filter(x-> x.body.contains(string)).toArray(Todo[]::new);
   }
 
 
