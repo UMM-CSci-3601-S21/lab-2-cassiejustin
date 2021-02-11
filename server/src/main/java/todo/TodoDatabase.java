@@ -47,6 +47,16 @@ public class TodoDatabase {
         }
       filteredTodos = filterTodosByStatus(filteredTodos, targetStatus);
     }
+    //filter by owner if requested
+    if(queryParams.containsKey("owner")){
+      String ownerParam = queryParams.get("owner").get(0);
+      filteredTodos = filterTodosByOwner(filteredTodos, ownerParam);
+    }
+    // filter by body if defined
+    if (queryParams.containsKey("contains")){
+      String bodyParam = queryParams.get("contains").get(0);
+      filteredTodos = filterTodosByContains(filteredTodos, bodyParam);
+    }
     // filter by limit if defined
     if (queryParams.containsKey("limit")){
       String limitParam = queryParams.get("limit").get(0);
@@ -56,11 +66,6 @@ public class TodoDatabase {
       } catch (NumberFormatException e){
         throw new BadRequestResponse("Specified status '" + limitParam + "' can't be parsed to an integer");
       }
-    }
-    // filter by body if defined
-    if (queryParams.containsKey("contains")){
-      String bodyParam = queryParams.get("contains").get(0);
-      filteredTodos = filterTodosByContains(filteredTodos, bodyParam);
     }
     return filteredTodos;
   }
@@ -88,6 +93,10 @@ public class TodoDatabase {
 
   public Todo[] filterTodosByContains(Todo[] todos, String string){
     return Arrays.stream(todos).filter(x-> x.body.contains(string)).toArray(Todo[]::new);
+  }
+
+  public Todo[] filterTodosByOwner(Todo[] todos, String owner){
+    return Arrays.stream(todos).filter(x-> x.owner.contains(owner)).toArray(Todo[]::new);
   }
 
 
