@@ -60,6 +60,20 @@ public class TodoControllerSpec {
       assertEquals(false, todo.status);
     }
   }
+  @Test
+  public void GET_to_request_todos_with_illegal_limit() {
+    // We'll set the requested "age" to be a string ("abc")
+    // that can't be parsed to a number.
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("limit", Arrays.asList(new String[] { "sheep" }));
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    // This should now throw a `BadRequestResponse` exception because
+    // our request has an age that can't be parsed to a number.
+    Assertions.assertThrows(BadRequestResponse.class, () -> {
+      todoController.getTodos(ctx);
+    });
+  }
 
   @Test
   public void GET_to_request_todos_with_contains_body(){

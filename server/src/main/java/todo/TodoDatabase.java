@@ -22,10 +22,6 @@ public class TodoDatabase {
     allTodos = gson.fromJson(reader, Todo[].class);
   }
 
-  public int size() {
-    return allTodos.length;
-  }
-
   /**
    * Get an array of all the users satisfying the queries in the params.
    *
