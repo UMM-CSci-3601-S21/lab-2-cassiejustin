@@ -96,6 +96,24 @@ public class TodoControllerSpec {
 
   }
 
+  @Test
+  public void GET_to_request_todos_filter_category(){
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("category", Arrays.asList(new String[] { "software design" }));
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    todoController.getTodos(ctx);
+
+    //Confirm that all the todos passed to `json` have false status
+    ArgumentCaptor<Todo[]> argument = ArgumentCaptor.forClass(Todo[].class);
+    verify(ctx).json(argument.capture());
+    assertTrue(argument.getValue().length > 5);
+    for (Todo todo : argument.getValue()) {
+      assertEquals(true, todo.category.equals("software design"));
+    }
+
+  }
+
 
 
 }
