@@ -70,6 +70,23 @@ public class TodoControllerSpec {
       assertEquals(false, todo.status);
     }
   }
+
+  @Test
+  public void GET_to_request_todos_with_complete_status(){
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("status", Arrays.asList(new String[] { "complete" }));
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    todoController.getTodos(ctx);
+
+    //Confirm that all the todos passed to `json` have false status
+    ArgumentCaptor<Todo[]> argument = ArgumentCaptor.forClass(Todo[].class);
+    verify(ctx).json(argument.capture());
+    assertTrue(argument.getValue().length > 20);
+    for (Todo todo : argument.getValue()) {
+      assertEquals(true, todo.status);
+    }
+  }
   @Test
   public void GET_to_request_todos_with_illegal_limit() {
     // We'll set the requested "age" to be a string ("abc")
