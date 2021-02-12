@@ -78,9 +78,6 @@ public class TodoDatabase {
    * @param id the ID of the desired user
    * @return the user with the given ID, or null if there is no user with that ID
    */
-  public Todo getTodo(String id) {
-    return Arrays.stream(allTodos).filter(x -> x._id == (id)).findFirst().orElse(null);
-  }
 
   public Todo[] filterTodosByStatus(Todo[] todos, boolean status){
     return Arrays.stream(todos).filter(x -> x.status == (status)).toArray(Todo[]::new);
