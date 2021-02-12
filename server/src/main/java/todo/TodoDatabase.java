@@ -35,7 +35,7 @@ public class TodoDatabase {
     if (queryParams.containsKey("status")) {
       String statusParam = queryParams.get("status").get(0);
       boolean targetStatus;
-        if (statusParam == "incomplete"){
+        if ("incomplete".equals(statusParam)){
           targetStatus = false;
         }
         else {
