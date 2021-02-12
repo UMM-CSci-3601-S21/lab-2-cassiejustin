@@ -32,6 +32,7 @@ public class TodoControllerSpec {
   private Context ctx = mock(Context.class);
 
   private TodoController todoController;
+  Map<String, List<String>> queryParams;
   private static TodoDatabase db;
 
   @BeforeEach
@@ -40,6 +41,15 @@ public class TodoControllerSpec {
 
     db = new TodoDatabase(Server.TODO_DATA_FILE);
     todoController = new TodoController(db);
+  }
+
+  @Test
+  public void GET_to_request_todos_with_limit() throws IOException{
+    db = new TodoDatabase("/todos.json");
+    queryParams = new HashMap<>();
+    queryParams.put("limit", Arrays.asList(new String[] {"3"}));
+    Todo[] limitedTodos = db.listTodos(queryParams);
+    assertEquals(3, limitedTodos.length, "Incorrect number of Todos");
   }
 
 
