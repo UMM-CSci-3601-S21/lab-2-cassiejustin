@@ -32,6 +32,7 @@ public class TodoControllerSpec {
   private Context ctx = mock(Context.class);
 
   private TodoController todoController;
+  Map<String, List<String>> queryParams;
   private static TodoDatabase db;
 
   @BeforeEach
@@ -40,6 +41,15 @@ public class TodoControllerSpec {
 
     db = new TodoDatabase(Server.TODO_DATA_FILE);
     todoController = new TodoController(db);
+  }
+
+  @Test
+  public void GET_to_request_todos_with_limit() throws IOException{
+    db = new TodoDatabase("/todos.json");
+    queryParams = new HashMap<>();
+    queryParams.put("limit", Arrays.asList(new String[] {"3"}));
+    Todo[] limitedTodos = db.listTodos(queryParams);
+    assertEquals(3, limitedTodos.length, "Incorrect number of Todos");
   }
 
 
@@ -62,6 +72,37 @@ public class TodoControllerSpec {
   }
 
   @Test
+  public void GET_to_request_todos_with_complete_status(){
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("status", Arrays.asList(new String[] { "complete" }));
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    todoController.getTodos(ctx);
+
+    //Confirm that all the todos passed to `json` have false status
+    ArgumentCaptor<Todo[]> argument = ArgumentCaptor.forClass(Todo[].class);
+    verify(ctx).json(argument.capture());
+    assertTrue(argument.getValue().length > 20);
+    for (Todo todo : argument.getValue()) {
+      assertEquals(true, todo.status);
+    }
+  }
+  @Test
+  public void GET_to_request_todos_with_illegal_limit() {
+    // We'll set the requested "age" to be a string ("abc")
+    // that can't be parsed to a number.
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("limit", Arrays.asList(new String[] { "sheep" }));
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    // This should now throw a `BadRequestResponse` exception because
+    // our request has an age that can't be parsed to a number.
+    Assertions.assertThrows(BadRequestResponse.class, () -> {
+      todoController.getTodos(ctx);
+    });
+  }
+
+  @Test
   public void GET_to_request_todos_with_contains_body(){
     Map<String, List<String>> queryParams = new HashMap<>();
     queryParams.put("contains", Arrays.asList(new String[] { "nisi" }));
@@ -77,6 +118,43 @@ public class TodoControllerSpec {
       assertEquals(true, todo.body.contains("nisi"));
     }
   }
+
+  @Test
+  public void GET_to_request_todos_filter_owner(){
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("owner", Arrays.asList(new String[] { "Fry" }));
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    todoController.getTodos(ctx);
+
+    //Confirm that all the todos passed to `json` have false status
+    ArgumentCaptor<Todo[]> argument = ArgumentCaptor.forClass(Todo[].class);
+    verify(ctx).json(argument.capture());
+    assertTrue(argument.getValue().length > 5);
+    for (Todo todo : argument.getValue()) {
+      assertEquals(true, todo.owner.equals("Fry"));
+    }
+
+  }
+
+  @Test
+  public void GET_to_request_todos_filter_category(){
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("category", Arrays.asList(new String[] { "software design" }));
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    todoController.getTodos(ctx);
+
+    //Confirm that all the todos passed to `json` have false status
+    ArgumentCaptor<Todo[]> argument = ArgumentCaptor.forClass(Todo[].class);
+    verify(ctx).json(argument.capture());
+    assertTrue(argument.getValue().length > 5);
+    for (Todo todo : argument.getValue()) {
+      assertEquals(true, todo.category.equals("software design"));
+    }
+
+  }
+
 
 
 }

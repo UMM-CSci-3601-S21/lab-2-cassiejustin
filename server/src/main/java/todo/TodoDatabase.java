@@ -22,10 +22,6 @@ public class TodoDatabase {
     allTodos = gson.fromJson(reader, Todo[].class);
   }
 
-  public int size() {
-    return allTodos.length;
-  }
-
   /**
    * Get an array of all the users satisfying the queries in the params.
    *
@@ -39,13 +35,27 @@ public class TodoDatabase {
     if (queryParams.containsKey("status")) {
       String statusParam = queryParams.get("status").get(0);
       boolean targetStatus;
-        if (statusParam == "incomplete"){
+        if ("incomplete".equals(statusParam)){
           targetStatus = false;
         }
         else {
           targetStatus = true;
         }
       filteredTodos = filterTodosByStatus(filteredTodos, targetStatus);
+    }
+    //filter by owner if requested
+    if(queryParams.containsKey("owner")){
+      String ownerParam = queryParams.get("owner").get(0);
+      filteredTodos = filterTodosByOwner(filteredTodos, ownerParam);
+    }
+    // filter by body if defined
+    if (queryParams.containsKey("contains")){
+      String bodyParam = queryParams.get("contains").get(0);
+      filteredTodos = filterTodosByContains(filteredTodos, bodyParam);
+    }
+    if (queryParams.containsKey("category")){
+      String categoryParam = queryParams.get("category").get(0);
+      filteredTodos = filterTodosByCategory(filteredTodos, categoryParam);
     }
     // filter by limit if defined
     if (queryParams.containsKey("limit")){
@@ -56,11 +66,6 @@ public class TodoDatabase {
       } catch (NumberFormatException e){
         throw new BadRequestResponse("Specified status '" + limitParam + "' can't be parsed to an integer");
       }
-    }
-    // filter by body if defined
-    if (queryParams.containsKey("contains")){
-      String bodyParam = queryParams.get("contains").get(0);
-      filteredTodos = filterTodosByContains(filteredTodos, bodyParam);
     }
     return filteredTodos;
   }
@@ -73,9 +78,6 @@ public class TodoDatabase {
    * @param id the ID of the desired user
    * @return the user with the given ID, or null if there is no user with that ID
    */
-  public Todo getTodo(String id) {
-    return Arrays.stream(allTodos).filter(x -> x._id == (id)).findFirst().orElse(null);
-  }
 
   public Todo[] filterTodosByStatus(Todo[] todos, boolean status){
     return Arrays.stream(todos).filter(x -> x.status == (status)).toArray(Todo[]::new);
@@ -88,6 +90,14 @@ public class TodoDatabase {
 
   public Todo[] filterTodosByContains(Todo[] todos, String string){
     return Arrays.stream(todos).filter(x-> x.body.contains(string)).toArray(Todo[]::new);
+  }
+
+  public Todo[] filterTodosByOwner(Todo[] todos, String owner){
+    return Arrays.stream(todos).filter(x-> x.owner.equals(owner)).toArray(Todo[]::new);
+  }
+
+  public Todo[] filterTodosByCategory(Todo[] todos, String category ){
+    return Arrays.stream(todos).filter(x-> x.category.equals(category)).toArray(Todo[]::new);
   }
 
 
