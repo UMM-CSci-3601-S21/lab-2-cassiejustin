@@ -75,6 +75,9 @@ public class TodoDatabase {
       else if(sortParam.equals("owner")){
         filteredTodos = sortTodosByOwner(filteredTodos);
       }
+      else if(sortParam.equals("category")){
+        filteredTodos = sortTodosByCategory(filteredTodos);
+      }
 
     }
     return filteredTodos;
@@ -128,6 +131,20 @@ public class TodoDatabase {
     for(int i=0; i<todos.length; i++){
       for(int j =i+1; j<todos.length-1; j++){
         if((todos[i]).owner.compareTo((todos[j]).owner) > 0){
+            temp = todos[i];
+            todos[i] = todos[j];
+            todos[j] = temp;
+        }
+      }
+    }
+    return todos;
+  }
+
+  public Todo[] sortTodosByCategory(Todo[] todos){
+    Todo temp;
+    for(int i=0; i<todos.length; i++){
+      for(int j =i+1; j<todos.length-1; j++){
+        if((todos[i]).category.compareTo((todos[j]).category) > 0){
             temp = todos[i];
             todos[i] = todos[j];
             todos[j] = temp;
