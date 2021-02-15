@@ -67,6 +67,13 @@ public class TodoDatabase {
         throw new BadRequestResponse("Specified status '" + limitParam + "' can't be parsed to an integer");
       }
     }
+    if(queryParams.containsKey("orderBy")){
+      String sortParam = queryParams.get("orderBy").get(0);
+      if(sortParam.equals("body")){
+        filteredTodos = sortTodosByBody(filteredTodos);
+      }
+
+    }
     return filteredTodos;
   }
 
@@ -83,7 +90,6 @@ public class TodoDatabase {
     return Arrays.stream(todos).filter(x -> x.status == (status)).toArray(Todo[]::new);
 
   }
-
   public Todo[] filterTodosByLimit(Todo[] todos, int limit){
     return Arrays.copyOfRange(todos, 0, limit);
   }
@@ -100,6 +106,19 @@ public class TodoDatabase {
     return Arrays.stream(todos).filter(x-> x.category.equals(category)).toArray(Todo[]::new);
   }
 
+  public Todo[] sortTodosByBody(Todo[] todos) throws NullPointerException{
+    String temp;
+    for(int i=0; i<todos.length; i++){
+      for(int j =i+1; j<todos.length-1; j++){
+        if((todos[i]).body.compareTo((todos[j]).body) > 0){
+            temp = todos[i].body;
+            todos[i].body = todos[j].body;
+            todos[j].body = temp;
+        }
 
+      }
+    }
+    return todos;
+  }
 
 }
