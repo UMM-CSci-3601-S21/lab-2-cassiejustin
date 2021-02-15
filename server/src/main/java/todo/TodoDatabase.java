@@ -117,68 +117,50 @@ public class TodoDatabase {
   }
 
   public Todo[] sortTodosByBody(Todo[] todos) throws NullPointerException{
-    Todo temp;
-    for(int i=0; i<todos.length; i++){
-      for(int j =i+1; j<todos.length-1; j++){
-        if((todos[i]).body.compareTo((todos[j]).body) > 0){
-            temp = todos[i];
-            todos[i] = todos[j];
-            todos[j] = temp;
-        }
-
-      }
-    }
+    Arrays.sort(todos, new SortTodosByBody());
     return todos;
   }
   public Todo[] sortTodosByOwner(Todo[] todos){
-    Todo temp;
-    for(int i=0; i<todos.length; i++){
-      for(int j =i+1; j<todos.length-1; j++){
-        if((todos[i]).owner.compareTo((todos[j]).owner) > 0){
-            temp = todos[i];
-            todos[i] = todos[j];
-            todos[j] = temp;
-        }
-      }
-    }
+    Arrays.sort(todos, new SortTodosByOwner());
     return todos;
   }
 
   public Todo[] sortTodosByCategory(Todo[] todos){
-    Todo temp;
-    for(int i=0; i<todos.length; i++){
-      for(int j =i+1; j<todos.length-1; j++){
-        if((todos[i]).category.compareTo((todos[j]).category) > 0){
-            temp = todos[i];
-            todos[i] = todos[j];
-            todos[j] = temp;
-        }
-      }
-    }
+   Arrays.sort(todos, new SortTodosByCategory());
     return todos;
   }
 
   public Todo[] sortTodosByStatus(Todo[] todos){
-    Todo temp;
-    for(int i=0; i<todos.length; i++){
-      for(int j =i+1; j<todos.length-1; j++){
-        if(compareStatus(todos[i], todos[j]) > 0){
-          temp = todos[i];
-          todos[i] = todos[j];
-          todos[j] = temp;
-        }
-
-      }
-    }
+    Arrays.sort(todos, new SortTodosByStatus());
     return todos;
   }
 
-  public int compareStatus(Todo todo1, Todo todo2){
-    int s1 = todo1.status ? 0 : 1;
-    int s2 = todo2.status ? 0 : 1;
-
-    return s2 - s1;
+  class SortTodosByCategory implements Comparator<Todo>{
+    public int compare(Todo a, Todo b){
+      return a.category.compareTo(b.category);
+    }
   }
+  class SortTodosByBody implements Comparator<Todo>{
+    public int compare(Todo a, Todo b){
+      return a.body.compareTo(b.body);
+    }
+  }
+  class SortTodosByStatus implements Comparator<Todo>{
+    public int compare(Todo a, Todo b){
+      int s1 = a.status ? 0 : 1;
+      int s2 = b.status ? 0 : 1;
+      return s2 - s1;
+    }
+
+  }
+  class SortTodosByOwner implements Comparator<Todo>{
+    public int compare(Todo a, Todo b){
+      return a.owner.compareTo(b.owner);
+    }
+
+  }
+
+
 
 
 }
