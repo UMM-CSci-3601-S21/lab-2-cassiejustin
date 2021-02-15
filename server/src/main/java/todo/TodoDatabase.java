@@ -1,11 +1,12 @@
 package todo;
 
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 
@@ -67,6 +68,22 @@ public class TodoDatabase {
         throw new BadRequestResponse("Specified status '" + limitParam + "' can't be parsed to an integer");
       }
     }
+    if(queryParams.containsKey("orderBy")){
+      String sortParam = queryParams.get("orderBy").get(0);
+      if(sortParam.equals("body")){
+        filteredTodos = sortTodosByBody(filteredTodos);
+      }
+      else if(sortParam.equals("owner")){
+        filteredTodos = sortTodosByOwner(filteredTodos);
+      }
+      else if(sortParam.equals("category")){
+        filteredTodos = sortTodosByCategory(filteredTodos);
+      }
+      else if(sortParam.equals("status")){
+        filteredTodos = sortTodosByStatus(filteredTodos);
+      }
+
+    }
     return filteredTodos;
   }
 
@@ -83,7 +100,6 @@ public class TodoDatabase {
     return Arrays.stream(todos).filter(x -> x.status == (status)).toArray(Todo[]::new);
 
   }
-
   public Todo[] filterTodosByLimit(Todo[] todos, int limit){
     return Arrays.copyOfRange(todos, 0, limit);
   }
@@ -100,6 +116,69 @@ public class TodoDatabase {
     return Arrays.stream(todos).filter(x-> x.category.equals(category)).toArray(Todo[]::new);
   }
 
+  public Todo[] sortTodosByBody(Todo[] todos) throws NullPointerException{
+    Todo temp;
+    for(int i=0; i<todos.length; i++){
+      for(int j =i+1; j<todos.length-1; j++){
+        if((todos[i]).body.compareTo((todos[j]).body) > 0){
+            temp = todos[i];
+            todos[i] = todos[j];
+            todos[j] = temp;
+        }
+
+      }
+    }
+    return todos;
+  }
+  public Todo[] sortTodosByOwner(Todo[] todos){
+    Todo temp;
+    for(int i=0; i<todos.length; i++){
+      for(int j =i+1; j<todos.length-1; j++){
+        if((todos[i]).owner.compareTo((todos[j]).owner) > 0){
+            temp = todos[i];
+            todos[i] = todos[j];
+            todos[j] = temp;
+        }
+      }
+    }
+    return todos;
+  }
+
+  public Todo[] sortTodosByCategory(Todo[] todos){
+    Todo temp;
+    for(int i=0; i<todos.length; i++){
+      for(int j =i+1; j<todos.length-1; j++){
+        if((todos[i]).category.compareTo((todos[j]).category) > 0){
+            temp = todos[i];
+            todos[i] = todos[j];
+            todos[j] = temp;
+        }
+      }
+    }
+    return todos;
+  }
+
+  public Todo[] sortTodosByStatus(Todo[] todos){
+    Todo temp;
+    for(int i=0; i<todos.length; i++){
+      for(int j =i+1; j<todos.length-1; j++){
+        if(compareStatus(todos[i], todos[j]) > 0){
+          temp = todos[i];
+          todos[i] = todos[j];
+          todos[j] = temp;
+        }
+
+      }
+    }
+    return todos;
+  }
+
+  public int compareStatus(Todo todo1, Todo todo2){
+    int s1 = todo1.status ? 0 : 1;
+    int s2 = todo2.status ? 0 : 1;
+
+    return s2 - s1;
+  }
 
 
 }
