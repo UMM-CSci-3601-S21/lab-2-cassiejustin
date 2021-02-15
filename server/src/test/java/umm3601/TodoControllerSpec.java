@@ -1,6 +1,7 @@
 package umm3601;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -25,6 +26,7 @@ import todo.Todo;
 import todo.TodoController;
 import todo.TodoDatabase;
 import umm3601.Server;
+
 
 
 public class TodoControllerSpec {
@@ -220,7 +222,36 @@ public class TodoControllerSpec {
 
 
   }
+  public int compareStatus(Todo todo1, Todo todo2){
+    int s1 = todo1.status ? 0 : 1;
+    int s2 = todo2.status ? 0 : 1;
+
+    return s2 - s1;
+  }
 
 
+  @Test
+  public void GET_to_request_todos_orderBy_status(){
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("orderBy", Arrays.asList(new String[] { "status" }));
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    todoController.getTodos(ctx);
+
+    //Confirm that all the todos passed to `json` are in alphabetical
+    ArgumentCaptor<Todo[]> argument = ArgumentCaptor.forClass(Todo[].class);
+    verify(ctx).json(argument.capture());
+    int length = argument.getValue().length;
+
+    for(int i=0; i<length; i++){
+      for(int j=i+1; j<length-1; j++){
+        assertTrue((compareStatus(argument.getValue()[i],argument.getValue()[j]) <= 0));
+      }
+    }
+
+
+
+
+  }
 
 }
