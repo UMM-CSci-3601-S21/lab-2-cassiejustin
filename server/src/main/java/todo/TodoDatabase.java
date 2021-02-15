@@ -1,11 +1,12 @@
 package todo;
 
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 
@@ -77,6 +78,9 @@ public class TodoDatabase {
       }
       else if(sortParam.equals("category")){
         filteredTodos = sortTodosByCategory(filteredTodos);
+      }
+      else if(sortParam.equals("status")){
+        filteredTodos = sortTodosByStatus(filteredTodos);
       }
 
     }
@@ -152,6 +156,28 @@ public class TodoDatabase {
       }
     }
     return todos;
+  }
+
+  public Todo[] sortTodosByStatus(Todo[] todos){
+    Todo temp;
+    for(int i=0; i<todos.length; i++){
+      for(int j =i+1; j<todos.length-1; j++){
+        if(compareStatus(todos[i], todos[j]) > 0){
+          temp = todos[i];
+          todos[i] = todos[j];
+          todos[j] = temp;
+        }
+
+      }
+    }
+    return todos;
+  }
+
+  public int compareStatus(Todo todo1, Todo todo2){
+    int s1 = todo1.status ? 0 : 1;
+    int s2 = todo2.status ? 0 : 1;
+
+    return s2 - s1;
   }
 
 
