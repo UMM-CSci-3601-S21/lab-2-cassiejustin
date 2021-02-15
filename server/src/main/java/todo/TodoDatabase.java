@@ -107,13 +107,13 @@ public class TodoDatabase {
   }
 
   public Todo[] sortTodosByBody(Todo[] todos) throws NullPointerException{
-    String temp;
+    Todo temp;
     for(int i=0; i<todos.length; i++){
       for(int j =i+1; j<todos.length-1; j++){
         if((todos[i]).body.compareTo((todos[j]).body) > 0){
-            temp = todos[i].body;
-            todos[i].body = todos[j].body;
-            todos[j].body = temp;
+            temp = todos[i];
+            todos[i] = todos[j];
+            todos[j] = temp;
         }
 
       }
