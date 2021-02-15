@@ -199,6 +199,28 @@ public class TodoControllerSpec {
 
   }
 
+  @Test
+  public void GET_to_request_todos_orderBy_category(){
+    Map<String, List<String>> queryParams = new HashMap<>();
+    queryParams.put("orderBy", Arrays.asList(new String[] { "category" }));
+
+    when(ctx.queryParamMap()).thenReturn(queryParams);
+    todoController.getTodos(ctx);
+
+    //Confirm that all the todos passed to `json` are in alphabetical
+    ArgumentCaptor<Todo[]> argument = ArgumentCaptor.forClass(Todo[].class);
+    verify(ctx).json(argument.capture());
+    int length = argument.getValue().length;
+
+    for(int i=0; i<length; i++){
+      for(int j=i+1; j<length-1; j++){
+        assertTrue(argument.getValue()[i].category.compareTo(argument.getValue()[j].category) <= 0 );
+      }
+    }
+
+
+  }
+
 
 
 }
